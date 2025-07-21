@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhysioCheck Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="#ff7b3d" stroke="#fff" stroke-width="2"/>
+                        <path d="M20 8v24M8 20h24" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 id="app-title">PhysioCheck Assessment</h1>
+                    <p id="app-subtitle">Professional Physiotherapy Assessment Tool</p>
+                </div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-text" id="progress-text">Step 1 of 5</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="assessment-container">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <nav class="navigation">
+            <button id="prev-btn" class="nav-btn nav-btn-secondary" disabled>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Previous
+            </button>
+            <button id="next-btn" class="nav-btn nav-btn-primary" disabled>
+                Next
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Body Diagram Modal (for mobile) -->
+    <div id="body-diagram-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Body Areas</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-body-diagram"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-done" class="nav-btn nav-btn-primary">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Loading assessment...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

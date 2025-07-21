@@ -1,0 +1,85 @@
+{
+  "start": {
+    "question": "Welcome to the physio check. Please select the area of your pain.",
+    "options": [
+      { "answer": "Head", "next": "head_pain" },
+      { "answer": "Neck", "next": "neck_pain" },
+      { "answer": "Shoulder", "next": "shoulder_pain" },
+      { "answer": "Back", "next": "back_pain" },
+      { "answer": "Knee", "next": "knee_pain" }
+    ]
+  },
+  "head_pain": {
+    "question": "What type of headache do you have?",
+    "options": [
+      { "answer": "Tension-type", "result": "Tension headaches are the most common type of headache. They are often described as a constant ache or pressure around the head, especially at the temples or back of the head and neck." },
+      { "answer": "Migraine", "result": "Migraines are intense, throbbing headaches often accompanied by nausea, vomiting, and sensitivity to light and sound." },
+      { "answer": "Cluster", "result": "Cluster headaches are severe, recurring headaches that are one-sided, often described as a burning or piercing sensation behind one eye." }
+    ]
+  },
+  "neck_pain": {
+    "question": "Is the pain sharp or dull?",
+    "options": [
+      { "answer": "Sharp", "next": "neck_sharp_pain" },
+      { "answer": "Dull", "next": "neck_dull_pain" }
+    ]
+  },
+  "neck_sharp_pain": {
+    "question": "Does the pain radiate to your arm or hand?",
+    "options": [
+        { "answer": "Yes", "result": "Sharp, radiating neck pain can be a sign of a pinched nerve (cervical radiculopathy). It is advisable to consult a healthcare professional." },
+        { "answer": "No", "result": "Localized sharp neck pain may be due to a facet joint problem or a muscle spasm. Consider gentle stretches and see if the pain improves." }
+    ]
+  },
+  "neck_dull_pain": {
+      "question": "Is your neck stiff and difficult to move?",
+      "options": [
+          { "answer": "Yes", "result": "Dull, aching neck pain with stiffness is often due to muscle strain or a ligament sprain. Applying heat and gentle range-of-motion exercises may help." },
+          { "answer": "No", "result": "A persistent dull ache without significant stiffness might be related to posture. Be mindful of your posture when sitting or using devices." }
+      ]
+  },
+  "shoulder_pain": {
+    "question": "Is the pain on the top of your shoulder or deep inside the joint?",
+    "options": [
+      { "answer": "Top of shoulder", "result": "Pain on top of the shoulder is often related to the acromioclavicular (AC) joint. This can be caused by an injury or arthritis." },
+      { "answer": "Deep inside", "next": "shoulder_deep_pain" }
+    ]
+  },
+  "shoulder_deep_pain": {
+    "question": "Does it hurt more when you lift your arm?",
+    "options": [
+        { "answer": "Yes", "result": "Pain deep in the shoulder that worsens with lifting could indicate a rotator cuff issue, such as tendonitis or a tear. You should see a physiotherapist." },
+        { "answer": "No", "result": "If the pain is constant and not related to movement, it could be referred pain from another area or a sign of inflammation like bursitis. A professional diagnosis is recommended." }
+    ]
+  },
+  "back_pain": {
+    "question": "Is the pain in your upper, middle, or lower back?",
+    "options": [
+      { "answer": "Upper/Middle", "result": "Pain in the upper or middle back can be caused by poor posture, muscle irritation, or joint issues. Thoracic spine mobility exercises can be beneficial." },
+      { "answer": "Lower", "next": "lower_back_pain" }
+    ]
+  },
+  "lower_back_pain": {
+    "question": "Does the pain travel down your leg?",
+    "options": [
+        { "answer": "Yes", "result": "Lower back pain that travels down the leg (sciatica) is often caused by a herniated disc or spinal stenosis pressing on a nerve. A medical evaluation is important." },
+        { "answer": "No", "result": "Localized lower back pain is very common and often related to muscle strain, ligament sprain, or disc issues. Core strengthening exercises are usually recommended." }
+    ]
+  },
+  "knee_pain": {
+    "question": "Where is the pain located?",
+    "options": [
+      { "answer": "Front of the knee", "next": "knee_front_pain" },
+      { "answer": "Inside of the knee", "result": "Pain on the inside (medial) of the knee can be related to the medial meniscus or the medial collateral ligament (MCL)." },
+      { "answer": "Outside of the knee", "result": "Pain on the outside (lateral) of the knee could be an issue with the lateral meniscus, lateral collateral ligament (LCL), or IT band syndrome." },
+      { "answer": "Back of the knee", "result": "Pain in the back of the knee can be caused by a Baker's cyst or an injury to the hamstring tendons." }
+    ]
+  },
+  "knee_front_pain": {
+    "question": "Does it hurt more when going up/down stairs or after sitting for a long time?",
+    "options": [
+        { "answer": "Yes", "result": "This pattern of pain is classic for patellofemoral pain syndrome (runner's knee). It involves irritation of the cartilage under the kneecap. Strengthening the quadriceps can help." },
+        { "answer": "No", "result": "If the pain is more constant and located just below the kneecap, it might be patellar tendonitis (jumper's knee). Rest and specific exercises are key." }
+    ]
+  }
+}
