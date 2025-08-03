@@ -5,6 +5,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "dev": "PORT=3001 HOST=0.0.0.0 NODE_ENV=development node dist/index.js",
+    "start:local": "PORT=3001 HOST=localhost NODE_ENV=development node dist/index.js",
+    "start:network": "PORT=3001 HOST=0.0.0.0 NODE_ENV=development node dist/index.js",
+    "start:prod": "PORT=3001 HOST=0.0.0.0 NODE_ENV=production node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

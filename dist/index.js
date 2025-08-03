@@ -8,8 +8,17 @@ const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
-const port = 3001;
-app.use((0, cors_1.default)());
+const port = parseInt(process.env.PORT || '3001', 10);
+const host = process.env.HOST || '0.0.0.0';
+// Enhanced CORS configuration for external access
+app.use((0, cors_1.default)({
+    origin: process.env.NODE_ENV === 'production'
+        ? ['https://yourdomain.com', 'https://www.yourdomain.com'] // Replace with your actual domain
+        : true, // Allow all origins in development
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express_1.default.json());
 app.use(express_1.default.static('public'));
 // Load configuration files
@@ -346,8 +355,10 @@ app.use((req, res) => {
     console.log(`[server] 404 - Route not found: ${req.method} ${req.path}`);
     res.status(404).json({ error: 'Route not found' });
 });
-app.listen(port, () => {
-    console.log(`[server]: Enhanced PhysioCheck server is running at http://localhost:${port}`);
+app.listen(port, host, () => {
+    console.log(`[server]: Enhanced PhysioCheck server is running at http://${host}:${port}`);
+    console.log(`[server]: Local access: http://localhost:${port}`);
+    console.log(`[server]: Network access: http://0.0.0.0:${port}`);
     console.log(`[server]: Assessment config loaded: ${assessmentConfig ? 'Yes' : 'No (using defaults)'}`);
     console.log(`[server]: Legacy questionnaire loaded: ${questionnaire ? 'Yes' : 'No'}`);
 });
