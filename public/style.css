@@ -913,12 +913,195 @@ body {
     }
 }
 
+/* Enhanced Results Styling */
+.results-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.results-title {
+    background: linear-gradient(135deg, var(--primary-color), #e65a2b);
+    color: white;
+    margin: 0;
+    padding: 2rem;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    position: relative;
+}
+
+.results-title::after {
+    content: '✓';
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.results-content {
+    padding: 2rem;
+}
+
+.results-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.2s ease;
+}
+
+.results-section:hover {
+    transform: translateX(4px);
+}
+
+.results-section:last-child {
+    margin-bottom: 0;
+}
+
+.results-section h3 {
+    color: var(--primary-color);
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.results-section h3::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.2;
+}
+
+.results-section p {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Risk Assessment Styling */
+.results-section:has(h3:contains("Risk Assessment")) {
+    border-left-color: #dc3545;
+}
+
+.results-section:has(h3:contains("Risk Assessment")) h3 {
+    color: #dc3545;
+}
+
+.results-section:has(h3:contains("Risk Assessment")) h3::before {
+    background: #dc3545;
+}
+
+/* Recommendations Styling */
+.results-section:has(h3:contains("Recommendations")) {
+    border-left-color: #28a745;
+}
+
+.results-section:has(h3:contains("Recommendations")) h3 {
+    color: #28a745;
+}
+
+.results-section:has(h3:contains("Recommendations")) h3::before {
+    background: #28a745;
+}
+
+/* Self-Care Tips Styling */
+.results-section:has(h3:contains("Self-Care Tips")) {
+    border-left-color: #17a2b8;
+}
+
+.results-section:has(h3:contains("Self-Care Tips")) h3 {
+    color: #17a2b8;
+}
+
+.results-section:has(h3:contains("Self-Care Tips")) h3::before {
+    background: #17a2b8;
+}
+
+/* Medical Attention Styling */
+.results-section:has(h3:contains("Medical Attention")) {
+    border-left-color: #ffc107;
+}
+
+.results-section:has(h3:contains("Medical Attention")) h3 {
+    color: #ffc107;
+}
+
+.results-section:has(h3:contains("Medical Attention")) h3::before {
+    background: #ffc107;
+}
+
+.results-actions {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.results-actions .nav-btn {
+    min-width: 140px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.results-actions .nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Area Tags */
+.selected-areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.area-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.area-tag::before {
+    content: '📍';
+    font-size: 0.75rem;
+}
+
 /* Print Styles */
 @media print {
     .navigation,
     .app-header .progress-section,
     .modal,
-    .loading-overlay {
+    .loading-overlay,
+    .results-actions {
         display: none !important;
     }
 
@@ -933,6 +1116,22 @@ body {
 
     .results-container {
         page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .results-title {
+        background: #333 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    .results-section {
+        background: white !important;
+        border: 1px solid #ddd;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
     }
 }
 

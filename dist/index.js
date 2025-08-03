@@ -1,43 +1,8 @@
 "use strict";
-// import express, { Express, Request, Response } from 'express';
-// import cors from 'cors';
-// import questionnaireData from './questionnaire.json';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// interface Questionnaire {
-//   question: string;
-//   options: { answer: string; next?: string; result?: string }[];
-// }
-// const questionnaire: Record<string, Questionnaire> = questionnaireData as Record<string, Questionnaire>;
-// const app: Express = express();
-// const port = process.env.PORT || 3001;
-// app.use(cors());
-// app.use(express.json());
-// // API routes
-// app.get('/api/questionnaire/start', (req: Request, res: Response) => {
-//   console.log('[server] GET /api/questionnaire/start hit');
-//   res.json(questionnaire.start);
-// });
-// app.post('/api/questionnaire/answer', (req: Request, res: Response) => {
-//   const { answer, next } = req.body;
-//   if (!next || !questionnaire[next]) {
-//     return res.status(400).json({ error: 'Invalid next question specified' });
-//   }
-//   const nextQuestion = questionnaire[next];
-//   res.json(nextQuestion);
-// });
-// // Serve static files for the frontend
-// app.use(express.static('public'));
-// // CATCH-ALL: Log any request that hasn't been handled by a route yet
-// app.use((req: Request, res: Response, next) => {
-//   console.log(`[server] Unhandled request received for: ${req.method} ${req.path}`);
-//   next();
-// });
-// app.listen(port, () => {
-//   console.log(`[server]: Server is running at http://localhost:${port}`);
-// });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
@@ -154,15 +119,18 @@ app.post('/api/assessment/submit', (req, res) => {
         if (!fs_1.default.existsSync(resultsDir)) {
             fs_1.default.mkdirSync(resultsDir, { recursive: true });
         }
+        // Process and enhance the assessment data
+        const enhancedData = processAssessmentData(assessmentData);
         // Add metadata
-        const resultData = Object.assign(Object.assign({}, assessmentData), { submittedAt: timestamp, id: Date.now().toString() });
+        const resultData = Object.assign(Object.assign({}, enhancedData), { submittedAt: timestamp, id: Date.now().toString(), version: '2.0.0' });
         // Save to file
         fs_1.default.writeFileSync(resultsPath, JSON.stringify(resultData, null, 2));
         console.log('[server] Assessment result saved:', filename);
         res.json({
             success: true,
             message: 'Assessment submitted successfully',
-            id: resultData.id
+            id: resultData.id,
+            riskLevel: enhancedData.riskLevel
         });
     }
     catch (error) {
@@ -170,6 +138,61 @@ app.post('/api/assessment/submit', (req, res) => {
         res.status(500).json({ error: 'Failed to save assessment result' });
     }
 });
+// Process and enhance assessment data
+function processAssessmentData(data) {
+    const enhanced = Object.assign({}, data);
+    // Calculate risk level based on red flags
+    const redFlags = checkRedFlags(data);
+    enhanced.riskLevel = redFlags.length > 0 ? 'HIGH' : 'LOW';
+    enhanced.redFlags = redFlags;
+    // Generate summary statistics
+    enhanced.summary = generateSummary(data);
+    // Add processing timestamp
+    enhanced.processedAt = new Date().toISOString();
+    return enhanced;
+}
+// Check for red flags in screening questions
+function checkRedFlags(data) {
+    var _a;
+    const redFlags = [];
+    const screeningAnswers = ((_a = data.answers) === null || _a === void 0 ? void 0 : _a.screening_questions) || {};
+    const redFlagQuestions = [
+        'weight_loss', 'corticosteroids', 'constant_pain', 'cancer_history',
+        'general_symptoms', 'night_pain', 'weight_bearing', 'neurological_symptoms',
+        'bowel_bladder', 'fever'
+    ];
+    redFlagQuestions.forEach(question => {
+        if (screeningAnswers[question] === 'yes') {
+            redFlags.push(question.replace('_', ' '));
+        }
+    });
+    return redFlags;
+}
+// Generate summary statistics
+function generateSummary(data) {
+    var _a, _b;
+    const summary = {};
+    // Body areas affected
+    if (data.selectedBodyParts) {
+        summary.affectedAreas = data.selectedBodyParts.length;
+        summary.primaryAreas = data.selectedBodyParts;
+    }
+    // Pain level if available
+    const symptomAnswers = ((_a = data.answers) === null || _a === void 0 ? void 0 : _a.symptom_onset) || {};
+    if (symptomAnswers.pain_level) {
+        summary.averagePainLevel = parseInt(symptomAnswers.pain_level);
+    }
+    // Duration of symptoms
+    if (symptomAnswers.duration) {
+        summary.symptomDuration = symptomAnswers.duration;
+    }
+    // Functional impact
+    const functionalAnswers = ((_b = data.answers) === null || _b === void 0 ? void 0 : _b.functional_assessment) || {};
+    if (functionalAnswers.work_impact) {
+        summary.workImpact = functionalAnswers.work_impact;
+    }
+    return summary;
+}
 // Get assessment results (for admin/review purposes)
 app.get('/api/assessment/results', (req, res) => {
     try {
@@ -217,6 +240,74 @@ app.get('/api/assessment/results/:id', (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve assessment result' });
     }
 });
+// Get assessment analytics and statistics
+app.get('/api/assessment/analytics', (req, res) => {
+    try {
+        const resultsDir = path_1.default.join(__dirname, '../results');
+        if (!fs_1.default.existsSync(resultsDir)) {
+            return res.json({
+                totalAssessments: 0,
+                riskLevels: { HIGH: 0, LOW: 0 },
+                commonAreas: {},
+                averagePainLevel: 0,
+                recentAssessments: []
+            });
+        }
+        const files = fs_1.default.readdirSync(resultsDir)
+            .filter(file => file.endsWith('.json'))
+            .map(file => {
+            const filePath = path_1.default.join(resultsDir, file);
+            return JSON.parse(fs_1.default.readFileSync(filePath, 'utf-8'));
+        });
+        // Calculate analytics
+        const analytics = {
+            totalAssessments: files.length,
+            riskLevels: { HIGH: 0, LOW: 0 },
+            commonAreas: {},
+            averagePainLevel: 0,
+            recentAssessments: files
+                .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+                .slice(0, 10)
+                .map(assessment => {
+                var _a;
+                return ({
+                    id: assessment.id,
+                    submittedAt: assessment.submittedAt,
+                    riskLevel: assessment.riskLevel || 'UNKNOWN',
+                    affectedAreas: ((_a = assessment.selectedBodyParts) === null || _a === void 0 ? void 0 : _a.length) || 0
+                });
+            })
+        };
+        let totalPainLevel = 0;
+        let painLevelCount = 0;
+        files.forEach(assessment => {
+            var _a;
+            // Risk levels
+            if (assessment.riskLevel) {
+                analytics.riskLevels[assessment.riskLevel]++;
+            }
+            // Common body areas
+            if (assessment.selectedBodyParts) {
+                assessment.selectedBodyParts.forEach((area) => {
+                    analytics.commonAreas[area] = (analytics.commonAreas[area] || 0) + 1;
+                });
+            }
+            // Average pain level
+            if ((_a = assessment.summary) === null || _a === void 0 ? void 0 : _a.averagePainLevel) {
+                totalPainLevel += assessment.summary.averagePainLevel;
+                painLevelCount++;
+            }
+        });
+        if (painLevelCount > 0) {
+            analytics.averagePainLevel = Math.round(totalPainLevel / painLevelCount * 10) / 10;
+        }
+        res.json(analytics);
+    }
+    catch (error) {
+        console.error('[server] Error generating analytics:', error);
+        res.status(500).json({ error: 'Failed to generate analytics' });
+    }
+});
 // Legacy questionnaire endpoints (for backward compatibility)
 app.get('/api/questionnaire/start', (req, res) => {
     if (questionnaire && questionnaire.start) {
@@ -240,6 +331,10 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         version: '2.0.0'
     });
+});
+// Admin dashboard route
+app.get('/admin', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../public/admin.html'));
 });
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -25,6 +25,12 @@
         { "id": "upper_back", "name": "Upper Back", "coordinates": [200, 200] },
         { "id": "arm_left", "name": "Left Arm", "coordinates": [120, 240] },
         { "id": "arm_right", "name": "Right Arm", "coordinates": [280, 240] },
+        { "id": "elbow_left", "name": "Left Elbow", "coordinates": [120, 280] },
+        { "id": "elbow_right", "name": "Right Elbow", "coordinates": [280, 280] },
+        { "id": "wrist_left", "name": "Left Wrist", "coordinates": [120, 320] },
+        { "id": "wrist_right", "name": "Right Wrist", "coordinates": [280, 320] },
+        { "id": "hand_left", "name": "Left Hand", "coordinates": [120, 360] },
+        { "id": "hand_right", "name": "Right Hand", "coordinates": [280, 360] },
         { "id": "lower_back", "name": "Lower Back", "coordinates": [200, 280] },
         { "id": "hip_left", "name": "Left Hip", "coordinates": [180, 320] },
         { "id": "hip_right", "name": "Right Hip", "coordinates": [220, 320] },
@@ -35,20 +41,23 @@
         { "id": "calf_left", "name": "Left Calf", "coordinates": [180, 500] },
         { "id": "calf_right", "name": "Right Calf", "coordinates": [220, 500] },
         { "id": "ankle_left", "name": "Left Ankle", "coordinates": [180, 560] },
-        { "id": "ankle_right", "name": "Right Ankle", "coordinates": [220, 560] }
+        { "id": "ankle_right", "name": "Right Ankle", "coordinates": [220, 560] },
+        { "id": "foot_left", "name": "Left Foot", "coordinates": [180, 600] },
+        { "id": "foot_right", "name": "Right Foot", "coordinates": [220, 600] }
       ]
     },
     {
       "id": "screening_questions",
       "type": "screening",
-      "title": "Please answer the following screening questions:",
-      "description": "These questions help us determine if you're suitable for this assessment.",
+      "title": "Medical Screening Questions",
+      "description": "These questions help us determine if you're suitable for this assessment and identify any red flags that require immediate medical attention.",
       "required": true,
       "questions": [
         {
           "id": "weight_loss",
           "question": "Have you lost more than 5 kg in the past month without being able to explain this?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "accident_cause",
@@ -58,37 +67,56 @@
         {
           "id": "corticosteroids",
           "question": "Have you been using corticosteroids (anti-inflammatories) for more than a year?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "constant_pain",
           "question": "Do you experience constant pain that does not decrease when resting or if you change position?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "cancer_history",
           "question": "Have you had any form of cancer?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "general_symptoms",
           "question": "Do you often feel sick, nauseous, fatigued or do you have a decreased appetite?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "night_pain",
           "question": "Do you suffer pain at night (when lying in bed)?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "weight_bearing",
           "question": "Are you in so much pain that you absolutely cannot put weight on the affected area?",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
         },
         {
           "id": "neurological_symptoms",
           "question": "Do you suffer from localised neurological symptoms? This includes difficulty moving, difficulty talking or being unable to find certain words.",
-          "type": "yes_no"
+          "type": "yes_no",
+          "redFlag": true
+        },
+        {
+          "id": "bowel_bladder",
+          "question": "Have you experienced any changes in bowel or bladder function?",
+          "type": "yes_no",
+          "redFlag": true
+        },
+        {
+          "id": "fever",
+          "question": "Do you have a fever or feel generally unwell?",
+          "type": "yes_no",
+          "redFlag": true
         }
       ]
     },
@@ -121,6 +149,86 @@
           "question": "What is your gender?",
           "type": "select",
           "options": ["Male", "Female", "Other", "Prefer not to say"]
+        },
+        {
+          "id": "occupation",
+          "question": "What is your occupation?",
+          "type": "select",
+          "options": [
+            "Office worker",
+            "Manual labor",
+            "Healthcare worker",
+            "Teacher/Educator",
+            "Student",
+            "Retired",
+            "Unemployed",
+            "Other"
+          ]
+        },
+        {
+          "id": "activity_level",
+          "question": "How would you describe your activity level?",
+          "type": "select",
+          "options": [
+            "Sedentary (little or no exercise)",
+            "Lightly active (light exercise 1-3 days/week)",
+            "Moderately active (moderate exercise 3-5 days/week)",
+            "Very active (hard exercise 6-7 days/week)",
+            "Extremely active (very hard exercise, physical job)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medical_history",
+      "type": "questionnaire",
+      "title": "Medical History",
+      "description": "Please tell us about your medical history and any relevant conditions.",
+      "required": true,
+      "questions": [
+        {
+          "id": "previous_injuries",
+          "question": "Have you had any previous injuries to the affected area?",
+          "type": "yes_no"
+        },
+        {
+          "id": "surgery_history",
+          "question": "Have you had any surgeries?",
+          "type": "multiple_select",
+          "options": [
+            "None",
+            "Spine surgery",
+            "Joint replacement",
+            "Arthroscopic surgery",
+            "Fracture repair",
+            "Other"
+          ]
+        },
+        {
+          "id": "chronic_conditions",
+          "question": "Do you have any chronic medical conditions?",
+          "type": "multiple_select",
+          "options": [
+            "None",
+            "Diabetes",
+            "Heart disease",
+            "High blood pressure",
+            "Arthritis",
+            "Osteoporosis",
+            "Fibromyalgia",
+            "Multiple sclerosis",
+            "Other"
+          ]
+        },
+        {
+          "id": "medications",
+          "question": "Are you currently taking any medications?",
+          "type": "yes_no"
+        },
+        {
+          "id": "allergies",
+          "question": "Do you have any allergies?",
+          "type": "yes_no"
         }
       ]
     },
@@ -128,7 +236,7 @@
       "id": "symptom_onset",
       "type": "questionnaire",
       "title": "Symptom Details",
-      "description": "Tell us more about how your symptoms started.",
+      "description": "Tell us more about how your symptoms started and their characteristics.",
       "required": true,
       "questions": [
         {
@@ -160,14 +268,44 @@
           "type": "scale",
           "min": 0,
           "max": 10
+        },
+        {
+          "id": "pain_type",
+          "question": "How would you describe your pain?",
+          "type": "multiple_select",
+          "options": [
+            "Sharp",
+            "Dull/aching",
+            "Burning",
+            "Tingling",
+            "Numbness",
+            "Stiffness",
+            "Weakness",
+            "Other"
+          ]
+        },
+        {
+          "id": "pain_pattern",
+          "question": "When is your pain typically worse?",
+          "type": "multiple_select",
+          "options": [
+            "In the morning",
+            "After activity",
+            "At night",
+            "When sitting",
+            "When standing",
+            "When moving",
+            "Constant",
+            "Other"
+          ]
         }
       ]
     },
     {
-      "id": "activity_impact",
+      "id": "functional_assessment",
       "type": "questionnaire",
-      "title": "Impact on Daily Activities",
-      "description": "How do your symptoms affect your daily life?",
+      "title": "Functional Assessment",
+      "description": "How do your symptoms affect your ability to perform daily activities?",
       "required": true,
       "questions": [
         {
@@ -209,6 +347,73 @@
             "Reaching overhead",
             "None of the above"
           ]
+        },
+        {
+          "id": "activities_avoided",
+          "question": "What activities have you stopped doing because of your symptoms?",
+          "type": "multiple_select",
+          "options": [
+            "None",
+            "Exercise/sports",
+            "Household chores",
+            "Work activities",
+            "Social activities",
+            "Hobbies",
+            "Other"
+          ]
+        },
+        {
+          "id": "assistance_needed",
+          "question": "Do you need assistance with any daily activities?",
+          "type": "yes_no"
+        }
+      ]
+    },
+    {
+      "id": "treatment_history",
+      "type": "questionnaire",
+      "title": "Treatment History",
+      "description": "What treatments have you tried for your current symptoms?",
+      "required": true,
+      "questions": [
+        {
+          "id": "previous_treatments",
+          "question": "What treatments have you tried for your current symptoms?",
+          "type": "multiple_select",
+          "options": [
+            "None",
+            "Physiotherapy",
+            "Chiropractic",
+            "Massage therapy",
+            "Acupuncture",
+            "Pain medication",
+            "Heat/cold therapy",
+            "Exercise program",
+            "Other"
+          ]
+        },
+        {
+          "id": "treatment_effectiveness",
+          "question": "How effective were these treatments?",
+          "type": "select",
+          "options": [
+            "Very effective",
+            "Somewhat effective",
+            "Slightly effective",
+            "Not effective",
+            "Made symptoms worse",
+            "Not applicable"
+          ]
+        },
+        {
+          "id": "current_treatment",
+          "question": "Are you currently receiving any treatment?",
+          "type": "yes_no"
+        },
+        {
+          "id": "surgery_consideration",
+          "question": "Have you been told you might need surgery?",
+          "type": "yes_no"
         }
       ]
     }
@@ -224,8 +429,20 @@
             "content": "Based on your responses, we have identified the following areas of concern:"
           },
           {
+            "title": "Risk Assessment",
+            "content": "Risk level and recommendations:"
+          },
+          {
             "title": "Recommendations",
             "content": "We recommend the following next steps:"
+          },
+          {
+            "title": "Self-Care Tips",
+            "content": "Things you can do to help manage your symptoms:"
+          },
+          {
+            "title": "When to Seek Medical Attention",
+            "content": "Seek immediate medical attention if you experience:"
           },
           {
             "title": "Disclaimer",

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhysioCheck Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color), #e65a2b);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .content-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-button.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .results-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .results-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .risk-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .risk-high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .risk-low {
+            background: #28a745;
+            color: white;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            margin: 0 0 1rem 0;
+            color: var(--text-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .simple-chart {
+            height: 200px;
+            display: flex;
+            align-items: end;
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            min-height: 20px;
+            position: relative;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1>PhysioCheck Admin Dashboard</h1>
+            <p>Assessment Analytics & Results Management</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-assessments">-</div>
+                <div class="stat-label">Total Assessments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="high-risk">-</div>
+                <div class="stat-label">High Risk Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avg-pain">-</div>
+                <div class="stat-label">Average Pain Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="today-assessments">-</div>
+                <div class="stat-label">Today's Assessments</div>
+            </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="content-tabs">
+            <button class="tab-button active" data-tab="analytics">Analytics</button>
+            <button class="tab-button" data-tab="results">Recent Results</button>
+            <button class="tab-button" data-tab="areas">Common Areas</button>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-content active" id="analytics-tab">
+            <div class="chart-container">
+                <h3 class="chart-title">Risk Level Distribution</h3>
+                <div class="simple-chart" id="risk-chart">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="chart-title">Pain Level Distribution</h3>
+                <div class="simple-chart" id="pain-chart">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div class="tab-content" id="results-tab">
+            <div class="results-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Risk Level</th>
+                            <th>Areas Affected</th>
+                            <th>Pain Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <tr>
+                            <td colspan="6" class="loading">Loading results...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Areas Tab -->
+        <div class="tab-content" id="areas-tab">
+            <div class="chart-container">
+                <h3 class="chart-title">Most Common Affected Areas</h3>
+                <div class="simple-chart" id="areas-chart">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AdminDashboard {
+            constructor() {
+                this.analytics = null;
+                this.results = [];
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                await this.loadData();
+                this.updateUI();
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+            }
+
+            switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            }
+
+            async loadData() {
+                try {
+                    // Load analytics
+                    const analyticsResponse = await fetch('/api/assessment/analytics');
+                    this.analytics = await analyticsResponse.json();
+
+                    // Load results
+                    const resultsResponse = await fetch('/api/assessment/results');
+                    this.results = await resultsResponse.json();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showError('Failed to load dashboard data');
+                }
+            }
+
+            updateUI() {
+                this.updateStats();
+                this.updateCharts();
+                this.updateResultsTable();
+            }
+
+            updateStats() {
+                if (!this.analytics) return;
+
+                document.getElementById('total-assessments').textContent = this.analytics.totalAssessments;
+                document.getElementById('high-risk').textContent = this.analytics.riskLevels.HIGH || 0;
+                document.getElementById('avg-pain').textContent = this.analytics.averagePainLevel || 'N/A';
+                
+                // Calculate today's assessments
+                const today = new Date().toDateString();
+                const todayCount = this.results.filter(result => 
+                    new Date(result.submittedAt).toDateString() === today
+                ).length;
+                document.getElementById('today-assessments').textContent = todayCount;
+            }
+
+            updateCharts() {
+                this.updateRiskChart();
+                this.updatePainChart();
+                this.updateAreasChart();
+            }
+
+            updateRiskChart() {
+                const chart = document.getElementById('risk-chart');
+                if (!this.analytics) return;
+
+                chart.innerHTML = '';
+                
+                const { HIGH, LOW } = this.analytics.riskLevels;
+                const total = HIGH + LOW;
+                
+                if (total === 0) {
+                    chart.innerHTML = '<div class="loading">No data available</div>';
+                    return;
+                }
+
+                const highPercent = (HIGH / total) * 100;
+                const lowPercent = (LOW / total) * 100;
+
+                const highBar = document.createElement('div');
+                highBar.className = 'chart-bar';
+                highBar.style.height = `${highPercent}%`;
+                highBar.style.background = '#dc3545';
+                
+                const highValue = document.createElement('div');
+                highValue.className = 'chart-value';
+                highValue.textContent = HIGH;
+                highBar.appendChild(highValue);
+                
+                const highLabel = document.createElement('div');
+                highLabel.className = 'chart-label';
+                highLabel.textContent = 'High Risk';
+                highBar.appendChild(highLabel);
+                
+                chart.appendChild(highBar);
+
+                const lowBar = document.createElement('div');
+                lowBar.className = 'chart-bar';
+                lowBar.style.height = `${lowPercent}%`;
+                lowBar.style.background = '#28a745';
+                
+                const lowValue = document.createElement('div');
+                lowValue.className = 'chart-value';
+                lowValue.textContent = LOW;
+                lowBar.appendChild(lowValue);
+                
+                const lowLabel = document.createElement('div');
+                lowLabel.className = 'chart-label';
+                lowLabel.textContent = 'Low Risk';
+                lowBar.appendChild(lowLabel);
+                
+                chart.appendChild(lowBar);
+            }
+
+            updatePainChart() {
+                const chart = document.getElementById('pain-chart');
+                if (!this.analytics || !this.analytics.averagePainLevel) {
+                    chart.innerHTML = '<div class="loading">No pain level data available</div>';
+                    return;
+                }
+
+                chart.innerHTML = '';
+                
+                const painLevel = this.analytics.averagePainLevel;
+                const maxHeight = 100;
+                const height = (painLevel / 10) * maxHeight;
+
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${height}%`;
+                bar.style.background = '#ff7b3d';
+                
+                const value = document.createElement('div');
+                value.className = 'chart-value';
+                value.textContent = painLevel;
+                bar.appendChild(value);
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = 'Average Pain';
+                bar.appendChild(label);
+                
+                chart.appendChild(bar);
+            }
+
+            updateAreasChart() {
+                const chart = document.getElementById('areas-chart');
+                if (!this.analytics || !this.analytics.commonAreas) {
+                    chart.innerHTML = '<div class="loading">No area data available</div>';
+                    return;
+                }
+
+                chart.innerHTML = '';
+                
+                const areas = Object.entries(this.analytics.commonAreas)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 5);
+
+                if (areas.length === 0) {
+                    chart.innerHTML = '<div class="loading">No area data available</div>';
+                    return;
+                }
+
+                const maxCount = Math.max(...areas.map(([, count]) => count));
+
+                areas.forEach(([area, count]) => {
+                    const height = (count / maxCount) * 100;
+                    
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${height}%`;
+                    bar.style.background = '#17a2b8';
+                    
+                    const value = document.createElement('div');
+                    value.className = 'chart-value';
+                    value.textContent = count;
+                    bar.appendChild(value);
+                    
+                    const label = document.createElement('div');
+                    label.className = 'chart-label';
+                    label.textContent = area.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    bar.appendChild(label);
+                    
+                    chart.appendChild(bar);
+                });
+            }
+
+            updateResultsTable() {
+                const tbody = document.getElementById('results-tbody');
+                if (!this.results || this.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="loading">No results available</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                
+                this.results.slice(0, 20).forEach(result => {
+                    const row = document.createElement('tr');
+                    
+                    const id = document.createElement('td');
+                    id.textContent = result.id;
+                    row.appendChild(id);
+                    
+                    const date = document.createElement('td');
+                    date.textContent = new Date(result.submittedAt).toLocaleDateString();
+                    row.appendChild(date);
+                    
+                    const risk = document.createElement('td');
+                    const riskBadge = document.createElement('span');
+                    riskBadge.className = `risk-badge risk-${result.riskLevel?.toLowerCase() || 'unknown'}`;
+                    riskBadge.textContent = result.riskLevel || 'Unknown';
+                    risk.appendChild(riskBadge);
+                    row.appendChild(risk);
+                    
+                    const areas = document.createElement('td');
+                    areas.textContent = result.selectedBodyParts?.length || 0;
+                    row.appendChild(areas);
+                    
+                    const pain = document.createElement('td');
+                    pain.textContent = result.summary?.averagePainLevel || 'N/A';
+                    row.appendChild(pain);
+                    
+                    const actions = document.createElement('td');
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View';
+                    viewBtn.className = 'nav-btn nav-btn-secondary';
+                    viewBtn.style.fontSize = '0.875rem';
+                    viewBtn.style.padding = '0.25rem 0.5rem';
+                    viewBtn.addEventListener('click', () => this.viewResult(result.id));
+                    actions.appendChild(viewBtn);
+                    row.appendChild(actions);
+                    
+                    tbody.appendChild(row);
+                });
+            }
+
+            viewResult(id) {
+                window.open(`/api/assessment/results/${id}`, '_blank');
+            }
+
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.textContent = message;
+                document.querySelector('.admin-container').insertBefore(errorDiv, document.querySelector('.stats-grid'));
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminDashboard();
+        });
+    </script>
+</body>
+</html> 

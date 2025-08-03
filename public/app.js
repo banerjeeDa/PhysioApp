@@ -680,62 +680,35 @@ class PhysioAssessmentApp {
         const content = document.createElement('div');
         content.className = 'results-content';
 
+        // Generate comprehensive results
+        const results = this.generateResults();
+
         // Summary section
-        const summarySection = document.createElement('div');
-        summarySection.className = 'results-section';
-        
-        const summaryTitle = document.createElement('h3');
-        summaryTitle.textContent = 'Summary';
-        summarySection.appendChild(summaryTitle);
-
-        const summaryText = document.createElement('p');
-        summaryText.textContent = 'Based on your responses, we have identified the following areas of concern:';
-        summarySection.appendChild(summaryText);
-
-        // Selected body parts
-        if (this.assessmentData.selectedBodyParts.length > 0) {
-            const selectedAreas = document.createElement('div');
-            selectedAreas.className = 'selected-areas';
-            
-            this.assessmentData.selectedBodyParts.forEach(partId => {
-                const bodyPart = this.getBodyPartName(partId);
-                const tag = document.createElement('span');
-                tag.className = 'area-tag';
-                tag.textContent = bodyPart;
-                selectedAreas.appendChild(tag);
-            });
-            
-            summarySection.appendChild(selectedAreas);
-        }
-
+        const summarySection = this.createResultsSection('Summary', results.summary);
         content.appendChild(summarySection);
 
+        // Risk Assessment section
+        if (results.riskAssessment) {
+            const riskSection = this.createResultsSection('Risk Assessment', results.riskAssessment);
+            content.appendChild(riskSection);
+        }
+
         // Recommendations section
-        const recommendationsSection = document.createElement('div');
-        recommendationsSection.className = 'results-section';
-        
-        const recommendationsTitle = document.createElement('h3');
-        recommendationsTitle.textContent = 'Recommendations';
-        recommendationsSection.appendChild(recommendationsTitle);
-
-        const recommendationsText = document.createElement('p');
-        recommendationsText.textContent = 'We recommend consulting with a qualified healthcare professional for a comprehensive evaluation and personalized treatment plan.';
-        recommendationsSection.appendChild(recommendationsText);
-
+        const recommendationsSection = this.createResultsSection('Recommendations', results.recommendations);
         content.appendChild(recommendationsSection);
 
+        // Self-Care Tips section
+        if (results.selfCareTips) {
+            const selfCareSection = this.createResultsSection('Self-Care Tips', results.selfCareTips);
+            content.appendChild(selfCareSection);
+        }
+
+        // When to Seek Medical Attention section
+        const medicalAttentionSection = this.createResultsSection('When to Seek Medical Attention', results.medicalAttention);
+        content.appendChild(medicalAttentionSection);
+
         // Disclaimer section
-        const disclaimerSection = document.createElement('div');
-        disclaimerSection.className = 'results-section';
-        
-        const disclaimerTitle = document.createElement('h3');
-        disclaimerTitle.textContent = 'Disclaimer';
-        disclaimerSection.appendChild(disclaimerTitle);
-
-        const disclaimerText = document.createElement('p');
-        disclaimerText.textContent = 'This assessment provides an indication of the condition(s) that you may be experiencing. For a complete diagnosis and treatment plan, please consult with a qualified healthcare professional.';
-        disclaimerSection.appendChild(disclaimerText);
-
+        const disclaimerSection = this.createResultsSection('Disclaimer', results.disclaimer);
         content.appendChild(disclaimerSection);
 
         resultsContainer.appendChild(content);
@@ -743,7 +716,12 @@ class PhysioAssessmentApp {
         // Action buttons
         const actionsContainer = document.createElement('div');
         actionsContainer.className = 'results-actions';
-        actionsContainer.style.cssText = 'display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;';
+        actionsContainer.style.cssText = 'display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;';
+
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'nav-btn nav-btn-secondary';
+        exportBtn.innerHTML = '📄 Export Results';
+        exportBtn.addEventListener('click', () => this.exportResults());
 
         const printBtn = document.createElement('button');
         printBtn.className = 'nav-btn nav-btn-secondary';
@@ -755,6 +733,7 @@ class PhysioAssessmentApp {
         restartBtn.innerHTML = '🔄 Start New Assessment';
         restartBtn.addEventListener('click', () => this.restartAssessment());
 
+        actionsContainer.appendChild(exportBtn);
         actionsContainer.appendChild(printBtn);
         actionsContainer.appendChild(restartBtn);
         resultsContainer.appendChild(actionsContainer);
@@ -768,6 +747,180 @@ class PhysioAssessmentApp {
         // Update progress to 100%
         this.elements.progressFill.style.width = '100%';
         this.elements.progressText.textContent = 'Assessment Complete';
+
+        // Submit results to server
+        this.submitResults();
+    }
+
+    createResultsSection(title, content) {
+        const section = document.createElement('div');
+        section.className = 'results-section';
+        
+        const sectionTitle = document.createElement('h3');
+        sectionTitle.textContent = title;
+        section.appendChild(sectionTitle);
+
+        if (Array.isArray(content)) {
+            content.forEach(item => {
+                const paragraph = document.createElement('p');
+                paragraph.textContent = item;
+                section.appendChild(paragraph);
+            });
+        } else {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = content;
+            section.appendChild(paragraph);
+        }
+
+        return section;
+    }
+
+    generateResults() {
+        const results = {
+            summary: [],
+            riskAssessment: null,
+            recommendations: [],
+            selfCareTips: [],
+            medicalAttention: [],
+            disclaimer: 'This assessment provides an indication of the condition(s) that you may be experiencing. For a complete diagnosis and treatment plan, please consult with a qualified healthcare professional.'
+        };
+
+        // Generate summary
+        if (this.assessmentData.selectedBodyParts.length > 0) {
+            const areas = this.assessmentData.selectedBodyParts.map(partId => this.getBodyPartName(partId)).join(', ');
+            results.summary.push(`Primary areas of concern: ${areas}`);
+        }
+
+        // Check for red flags
+        const redFlags = this.checkRedFlags();
+        if (redFlags.length > 0) {
+            results.riskAssessment = `HIGH RISK - Red flags detected: ${redFlags.join(', ')}`;
+            results.recommendations.push('Immediate medical evaluation is strongly recommended.');
+            results.medicalAttention.push('Seek immediate medical attention due to the presence of red flags.');
+        } else {
+            results.riskAssessment = 'LOW RISK - No immediate red flags detected';
+        }
+
+        // Generate recommendations based on body areas
+        const recommendations = this.generateRecommendations();
+        results.recommendations.push(...recommendations);
+
+        // Generate self-care tips
+        const selfCareTips = this.generateSelfCareTips();
+        results.selfCareTips.push(...selfCareTips);
+
+        // Standard medical attention items
+        results.medicalAttention.push(
+            'Severe or worsening pain',
+            'Numbness, tingling, or weakness in limbs',
+            'Loss of bowel or bladder control',
+            'Fever with back pain',
+            'Pain that wakes you at night',
+            'Inability to bear weight on affected area'
+        );
+
+        return results;
+    }
+
+    checkRedFlags() {
+        const redFlags = [];
+        const screeningAnswers = this.assessmentData.answers.screening_questions || {};
+
+        const redFlagQuestions = [
+            'weight_loss', 'corticosteroids', 'constant_pain', 'cancer_history',
+            'general_symptoms', 'night_pain', 'weight_bearing', 'neurological_symptoms',
+            'bowel_bladder', 'fever'
+        ];
+
+        redFlagQuestions.forEach(question => {
+            if (screeningAnswers[question] === 'yes') {
+                redFlags.push(question.replace('_', ' '));
+            }
+        });
+
+        return redFlags;
+    }
+
+    generateRecommendations() {
+        const recommendations = [];
+        const selectedAreas = this.assessmentData.selectedBodyParts;
+
+        // General recommendations
+        recommendations.push('Schedule an appointment with a qualified physiotherapist for a comprehensive evaluation.');
+
+        // Area-specific recommendations
+        if (selectedAreas.some(area => area.includes('back'))) {
+            recommendations.push('Consider core strengthening exercises to support your spine.');
+        }
+
+        if (selectedAreas.some(area => area.includes('knee'))) {
+            recommendations.push('Avoid high-impact activities until evaluated by a healthcare professional.');
+        }
+
+        if (selectedAreas.some(area => area.includes('shoulder'))) {
+            recommendations.push('Avoid overhead activities that may aggravate your shoulder symptoms.');
+        }
+
+        if (selectedAreas.some(area => area.includes('neck'))) {
+            recommendations.push('Pay attention to posture and ergonomics in daily activities.');
+        }
+
+        return recommendations;
+    }
+
+    generateSelfCareTips() {
+        const tips = [];
+        const selectedAreas = this.assessmentData.selectedBodyParts;
+
+        // General tips
+        tips.push('Apply ice for acute pain (first 48-72 hours)');
+        tips.push('Apply heat for chronic pain or stiffness');
+        tips.push('Maintain gentle movement within pain-free range');
+        tips.push('Practice good posture throughout the day');
+
+        // Area-specific tips
+        if (selectedAreas.some(area => area.includes('back'))) {
+            tips.push('Use proper lifting techniques (bend at knees, not waist)');
+            tips.push('Consider using a lumbar support pillow when sitting');
+        }
+
+        if (selectedAreas.some(area => area.includes('knee'))) {
+            tips.push('Elevate your leg when resting');
+            tips.push('Avoid prolonged sitting or standing in one position');
+        }
+
+        if (selectedAreas.some(area => area.includes('shoulder'))) {
+            tips.push('Sleep with a pillow supporting your arm');
+            tips.push('Avoid sleeping on the affected shoulder');
+        }
+
+        return tips;
+    }
+
+    async submitResults() {
+        try {
+            const resultData = {
+                ...this.assessmentData,
+                completedAt: new Date().toISOString(),
+                results: this.generateResults()
+            };
+
+            const response = await fetch('/api/assessment/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(resultData)
+            });
+
+            if (response.ok) {
+                console.log('Results submitted successfully');
+            } else {
+                console.error('Failed to submit results');
+            }
+        } catch (error) {
+            console.error('Error submitting results:', error);
+        }
     }
 
     getBodyPartName(partId) {
