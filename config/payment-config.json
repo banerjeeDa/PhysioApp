@@ -1,0 +1,33 @@
+{
+  "payment": {
+    "enabled": false,
+    "provider": "stripe",
+    "currency": "USD",
+    "amount": 29.99,
+    "description": "PhysioCheck Professional Assessment",
+    "features": [
+      "Comprehensive body assessment",
+      "Professional risk evaluation",
+      "Personalized recommendations",
+      "Self-care tips and guidance",
+      "Medical attention guidelines",
+      "Printable results report",
+      "30-day access to results"
+    ]
+  },
+  "stripe": {
+    "publishableKey": "pk_test_your_stripe_key_here",
+    "secretKey": "sk_test_your_stripe_secret_here",
+    "webhookSecret": "whsec_your_webhook_secret_here"
+  },
+  "paypal": {
+    "clientId": "your_paypal_client_id",
+    "clientSecret": "your_paypal_secret",
+    "mode": "sandbox"
+  },
+  "trial": {
+    "enabled": true,
+    "duration": "7 days",
+    "questions": 3
+  }
+} 

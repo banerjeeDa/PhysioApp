@@ -388,6 +388,11 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin.html'));
 });
 
+// Payment page route
+app.get('/payment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/payment.html'));
+});
+
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[server] Unhandled error:', err);

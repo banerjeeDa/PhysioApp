@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - PhysioCheck Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-header h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-header p {
+            color: var(--text-light);
+            font-size: var(--font-size-base);
+        }
+        
+        .pricing-card {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .price-currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        
+        .features-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-color);
+        }
+        
+        .features-list li::before {
+            content: '✓';
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+        
+        .payment-methods {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-method {
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+        
+        .payment-method.selected {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+        
+        .payment-form {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-base);
+            transition: var(--transition);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .pay-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+        
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: var(--font-size-sm);
+        }
+        
+        .security-badge::before {
+            content: '🔒';
+            font-size: 1rem;
+        }
+        
+        .trial-notice {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .trial-notice h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <a href="/" class="back-link">
+            ← Back to Assessment
+        </a>
+        
+        <div class="payment-header">
+            <h1>Complete Your Assessment</h1>
+            <p>Get your personalized physiotherapy assessment and professional recommendations</p>
+        </div>
+        
+        <div class="trial-notice">
+            <h3>🎉 Free Trial Available</h3>
+            <p>Try the first 3 questions for free, then unlock the full assessment for just $29.99</p>
+        </div>
+        
+        <div class="pricing-card">
+            <div class="price">
+                <span class="price-currency">$</span>29.99
+            </div>
+            <p style="text-align: center; color: var(--text-light); margin-bottom: 1.5rem;">
+                One-time payment • No subscription
+            </p>
+            
+            <ul class="features-list">
+                <li>Comprehensive body assessment</li>
+                <li>Professional risk evaluation</li>
+                <li>Personalized recommendations</li>
+                <li>Self-care tips and guidance</li>
+                <li>Medical attention guidelines</li>
+                <li>Printable results report</li>
+                <li>30-day access to results</li>
+            </ul>
+        </div>
+        
+        <div class="payment-form">
+            <h3 style="margin-bottom: 1.5rem; color: var(--text-color);">Payment Information</h3>
+            
+            <div class="payment-methods">
+                <div class="payment-method selected">
+                    <div class="payment-method-icon">💳</div>
+                    <div>
+                        <div style="font-weight: 600;">Credit Card</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-light);">Visa, Mastercard, American Express</div>
+                    </div>
+                </div>
+                <div class="payment-method">
+                    <div class="payment-method-icon">P</div>
+                    <div>
+                        <div style="font-weight: 600;">PayPal</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-light);">Pay with your PayPal account</div>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="payment-form">
+                <div class="form-group">
+                    <label class="form-label">Card Number</label>
+                    <input type="text" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Expiry Date</label>
+                        <input type="text" class="form-input" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVC</label>
+                        <input type="text" class="form-input" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Name on Card</label>
+                    <input type="text" class="form-input" placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="john@example.com">
+                </div>
+                
+                <button type="submit" class="pay-button" id="pay-button">
+                    Pay $29.99 & Get Results
+                </button>
+                
+                <div class="security-badge">
+                    Your payment is secure and encrypted
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Payment form handling
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('pay-button');
+            button.disabled = true;
+            button.textContent = 'Processing Payment...';
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // For now, just redirect to results
+                // In production, this would integrate with Stripe/PayPal
+                window.location.href = '/results';
+            }, 2000);
+        });
+        
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // Card number formatting
+        document.querySelector('input[placeholder="1234 5678 9012 3456"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            value = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = value;
+        });
+        
+        // Expiry date formatting
+        document.querySelector('input[placeholder="MM/YY"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html> 
