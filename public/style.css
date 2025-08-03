@@ -35,15 +35,16 @@ body {
     background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
     color: var(--text-color);
     line-height: 1.5;
-    min-height: 100vh;
+    height: 100vh;
     font-size: var(--font-size-base);
+    overflow: hidden;
 }
 
 /* App Container */
 #app-container {
     max-width: 800px;
     margin: 0 auto;
-    min-height: 100vh;
+    height: 100vh;
     background: var(--white);
     box-shadow: var(--shadow-lg);
     display: flex;
@@ -145,9 +146,11 @@ body {
 /* Main Content */
 .main-content {
     flex: 1;
-    padding: 1.5rem;
+    padding: 1rem;
     overflow-y: auto;
     background: var(--white);
+    display: flex;
+    flex-direction: column;
 }
 
 #assessment-container {
@@ -162,23 +165,23 @@ body {
 
 .step-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .step-title {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--text-color);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     letter-spacing: -0.025em;
 }
 
 .step-description {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     color: var(--text-light);
     max-width: 500px;
     margin: 0 auto;
-    line-height: 1.6;
+    line-height: 1.4;
 }
 
 .step-instruction {
@@ -357,10 +360,10 @@ body {
 
 /* Questions */
 .question-container {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     background: var(--white);
     border-radius: var(--border-radius);
-    padding: 1.25rem;
+    padding: 1rem;
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow);
 }
@@ -611,7 +614,7 @@ body {
 
 /* Navigation */
 .navigation {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid var(--border-color);
     background: var(--white);
     display: flex;

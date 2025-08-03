@@ -791,14 +791,16 @@ class PhysioAssessmentApp {
             results.summary.push(`Primary areas of concern: ${areas}`);
         }
 
-        // Check for red flags
-        const redFlags = this.checkRedFlags();
-        if (redFlags.length > 0) {
-            results.riskAssessment = `HIGH RISK - Red flags detected: ${redFlags.join(', ')}`;
+        // Comprehensive risk assessment
+        const riskLevel = this.assessRiskLevel();
+        results.riskAssessment = riskLevel.assessment;
+        
+        if (riskLevel.level === 'HIGH') {
             results.recommendations.push('Immediate medical evaluation is strongly recommended.');
-            results.medicalAttention.push('Seek immediate medical attention due to the presence of red flags.');
-        } else {
-            results.riskAssessment = 'LOW RISK - No immediate red flags detected';
+            results.medicalAttention.push('Seek immediate medical attention due to the presence of red flags or concerning symptoms.');
+        } else if (riskLevel.level === 'MEDIUM') {
+            results.recommendations.push('Schedule a medical evaluation within the next few days.');
+            results.medicalAttention.push('Monitor symptoms closely and seek medical attention if they worsen.');
         }
 
         // Generate recommendations based on body areas
@@ -820,6 +822,97 @@ class PhysioAssessmentApp {
         );
 
         return results;
+    }
+
+    assessRiskLevel() {
+        const redFlags = this.checkRedFlags();
+        const symptomAnswers = this.assessmentData.answers.symptom_onset || {};
+        const functionalAnswers = this.assessmentData.answers.functional_assessment || {};
+        
+        let riskScore = 0;
+        const riskFactors = [];
+
+        // Red flags (high weight)
+        if (redFlags.length > 0) {
+            riskScore += redFlags.length * 10;
+            riskFactors.push(`Red flags: ${redFlags.join(', ')}`);
+        }
+
+        // Pain level assessment
+        const painLevel = parseInt(symptomAnswers.pain_level) || 0;
+        if (painLevel >= 8) {
+            riskScore += 8;
+            riskFactors.push(`Severe pain (level ${painLevel}/10)`);
+        } else if (painLevel >= 6) {
+            riskScore += 4;
+            riskFactors.push(`Moderate to severe pain (level ${painLevel}/10)`);
+        }
+
+        // Duration assessment
+        const duration = symptomAnswers.duration;
+        if (duration === 'More than 6 months') {
+            riskScore += 3;
+            riskFactors.push('Chronic symptoms (>6 months)');
+        } else if (duration === '3-6 months') {
+            riskScore += 2;
+            riskFactors.push('Prolonged symptoms (3-6 months)');
+        }
+
+        // Functional impact
+        const workImpact = functionalAnswers.work_impact;
+        if (workImpact === 'Unable to work/perform activities') {
+            riskScore += 6;
+            riskFactors.push('Severe functional limitation');
+        } else if (workImpact === 'Severely') {
+            riskScore += 4;
+            riskFactors.push('Significant functional impact');
+        }
+
+        // Sleep impact
+        const sleepImpact = functionalAnswers.sleep_impact;
+        if (sleepImpact === 'Unable to sleep due to symptoms') {
+            riskScore += 5;
+            riskFactors.push('Severe sleep disturbance');
+        } else if (sleepImpact === 'Frequent sleep disturbance') {
+            riskScore += 3;
+            riskFactors.push('Frequent sleep problems');
+        }
+
+        // Pain patterns
+        const painPattern = symptomAnswers.pain_pattern || [];
+        if (painPattern.includes('Constant')) {
+            riskScore += 4;
+            riskFactors.push('Constant pain pattern');
+        }
+        if (painPattern.includes('At night')) {
+            riskScore += 3;
+            riskFactors.push('Night pain');
+        }
+
+        // Multiple body areas
+        const bodyAreas = this.assessmentData.selectedBodyParts.length;
+        if (bodyAreas >= 4) {
+            riskScore += 3;
+            riskFactors.push(`Multiple affected areas (${bodyAreas} areas)`);
+        } else if (bodyAreas >= 2) {
+            riskScore += 1;
+            riskFactors.push(`Multiple affected areas (${bodyAreas} areas)`);
+        }
+
+        // Determine risk level
+        let level, assessment;
+        if (riskScore >= 15 || redFlags.length > 0) {
+            level = 'HIGH';
+            assessment = `HIGH RISK - Multiple concerning factors: ${riskFactors.join(', ')}`;
+        } else if (riskScore >= 8) {
+            level = 'MEDIUM';
+            assessment = `MEDIUM RISK - Some concerning factors: ${riskFactors.join(', ')}`;
+        } else {
+            level = 'LOW';
+            assessment = 'LOW RISK - No immediate concerning factors detected';
+        }
+
+        return { level, assessment, riskScore, riskFactors };
     }
 
     checkRedFlags() {

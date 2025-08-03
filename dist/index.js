@@ -345,6 +345,10 @@ app.get('/api/health', (req, res) => {
 app.get('/admin', (req, res) => {
     res.sendFile(path_1.default.join(__dirname, '../public/admin.html'));
 });
+// Payment page route
+app.get('/payment', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../public/payment.html'));
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('[server] Unhandled error:', err);

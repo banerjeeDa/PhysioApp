@@ -1,0 +1,123 @@
+{
+  "selectedBodyParts": [
+    "arm_right",
+    "elbow_right"
+  ],
+  "answers": {
+    "gender": "male",
+    "screening_questions_weight_loss": "no",
+    "screening_questions_accident_cause": "no",
+    "screening_questions_corticosteroids": "no",
+    "screening_questions_constant_pain": "no",
+    "screening_questions_cancer_history": "no",
+    "screening_questions_night_pain": "no",
+    "screening_questions_general_symptoms": "no",
+    "screening_questions_weight_bearing": "no",
+    "screening_questions_neurological_symptoms": "no",
+    "screening_questions_bowel_bladder": "no",
+    "screening_questions_fever": "no",
+    "demographics_age": "30 - 39 years",
+    "demographics_activity_level": "Lightly active (light exercise 1-3 days/week)",
+    "demographics_occupation": "Student",
+    "demographics_gender": "Male",
+    "medical_history_surgery_history": [
+      "None"
+    ],
+    "medical_history_chronic_conditions": [
+      "Diabetes"
+    ],
+    "medical_history_previous_injuries": "no",
+    "medical_history_medications": "no",
+    "medical_history_allergies": "no",
+    "symptom_onset_pain_type": [
+      "Tingling",
+      "Numbness",
+      "Burning",
+      "Dull/aching",
+      "Weakness"
+    ],
+    "symptom_onset_pain_pattern": [
+      "After activity",
+      "At night",
+      "In the morning",
+      "When standing",
+      "When sitting",
+      "Constant"
+    ],
+    "symptom_onset_duration": "1-2 weeks",
+    "symptom_onset_onset_type": "Developed gradually",
+    "symptom_onset_pain_level": 10,
+    "functional_assessment_movement_patterns": [
+      "Twisting/rotating",
+      "Bending backward",
+      "Lifting objects",
+      "Sitting for long periods",
+      "Standing for long periods",
+      "Climbing stairs",
+      "Walking"
+    ],
+    "functional_assessment_activities_avoided": [
+      "Social activities",
+      "Hobbies",
+      "Work activities",
+      "Exercise/sports"
+    ],
+    "functional_assessment_work_impact": "Severely",
+    "functional_assessment_sleep_impact": "Unable to sleep due to symptoms",
+    "functional_assessment_assistance_needed": "no",
+    "treatment_history_previous_treatments": [
+      "None"
+    ],
+    "treatment_history_treatment_effectiveness": "Not applicable",
+    "treatment_history_current_treatment": "no",
+    "treatment_history_surgery_consideration": "no"
+  },
+  "startTime": "2025-08-03T23:54:19.769Z",
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "completedAt": "2025-08-03T23:56:28.608Z",
+  "results": {
+    "summary": [
+      "Primary areas of concern: Right Arm, Right Elbow"
+    ],
+    "riskAssessment": "LOW RISK - No immediate red flags detected",
+    "recommendations": [
+      "Schedule an appointment with a qualified physiotherapist for a comprehensive evaluation."
+    ],
+    "selfCareTips": [
+      "Apply ice for acute pain (first 48-72 hours)",
+      "Apply heat for chronic pain or stiffness",
+      "Maintain gentle movement within pain-free range",
+      "Practice good posture throughout the day"
+    ],
+    "medicalAttention": [
+      "Severe or worsening pain",
+      "Numbness, tingling, or weakness in limbs",
+      "Loss of bowel or bladder control",
+      "Fever with back pain",
+      "Pain that wakes you at night",
+      "Inability to bear weight on affected area"
+    ],
+    "disclaimer": "This assessment provides an indication of the condition(s) that you may be experiencing. For a complete diagnosis and treatment plan, please consult with a qualified healthcare professional."
+  },
+  "riskLevel": "LOW",
+  "redFlags": [],
+  "summary": {
+    "affectedAreas": 2,
+    "primaryAreas": [
+      "arm_right",
+      "elbow_right"
+    ]
+  },
+  "processedAt": "2025-08-03T23:56:28.688Z",
+  "submittedAt": "2025-08-03T23:56:28.685Z",
+  "id": "1754265388688",
+  "version": "2.0.0"
+}
