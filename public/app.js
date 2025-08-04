@@ -622,89 +622,118 @@ class PhysioAssessmentApp {
     }
 
     showResults() {
-        this.elements.assessmentContainer.innerHTML = '';
-        
-        const resultsContainer = document.createElement('div');
-        resultsContainer.className = 'results-container';
+        try {
+            console.log('Starting showResults...');
+            console.log('Assessment data available:', this.assessmentData);
+            
+            this.elements.assessmentContainer.innerHTML = '';
+            
+            const resultsContainer = document.createElement('div');
+            resultsContainer.className = 'results-container';
 
-        const title = document.createElement('h2');
-        title.className = 'results-title';
-        title.textContent = 'Assessment Complete';
-        resultsContainer.appendChild(title);
+            const title = document.createElement('h2');
+            title.className = 'results-title';
+            title.textContent = 'Assessment Complete';
+            resultsContainer.appendChild(title);
 
-        const content = document.createElement('div');
-        content.className = 'results-content';
+            const content = document.createElement('div');
+            content.className = 'results-content';
 
-        // Generate comprehensive results
-        const results = this.generateResults();
+            // Simple test results first
+            const testSection = document.createElement('div');
+            testSection.className = 'results-section';
+            testSection.innerHTML = '<h3>Test Results</h3><p>Assessment completed successfully!</p>';
+            content.appendChild(testSection);
 
-        // Summary section
-        const summarySection = this.createResultsSection('Summary', results.summary);
-        content.appendChild(summarySection);
+            // Try to generate comprehensive results
+            console.log('Attempting to generate results...');
+            try {
+                const results = this.generateResults();
+                console.log('Results generated successfully:', results);
+                
+                // Add results sections only if generation succeeded
+                if (results && results.summary) {
+                    const summarySection = this.createResultsSection('Summary', results.summary);
+                    content.appendChild(summarySection);
+                }
+                
+                if (results && results.riskAssessment) {
+                    const riskSection = this.createResultsSection('Risk Assessment', results.riskAssessment);
+                    content.appendChild(riskSection);
+                }
+                
+                if (results && results.recommendations) {
+                    const recommendationsSection = this.createResultsSection('Recommendations', results.recommendations);
+                    content.appendChild(recommendationsSection);
+                }
+                
+                if (results && results.selfCareTips) {
+                    const selfCareSection = this.createResultsSection('Self-Care Tips', results.selfCareTips);
+                    content.appendChild(selfCareSection);
+                }
+                
+                if (results && results.medicalAttention) {
+                    const medicalAttentionSection = this.createResultsSection('When to Seek Medical Attention', results.medicalAttention);
+                    content.appendChild(medicalAttentionSection);
+                }
+                
+                if (results && results.disclaimer) {
+                    const disclaimerSection = this.createResultsSection('Disclaimer', results.disclaimer);
+                    content.appendChild(disclaimerSection);
+                }
+            } catch (resultsError) {
+                console.error('Error generating results:', resultsError);
+                const errorSection = document.createElement('div');
+                errorSection.className = 'results-section';
+                errorSection.innerHTML = '<h3>Error</h3><p>Failed to generate detailed results: ' + resultsError.message + '</p>';
+                content.appendChild(errorSection);
+            }
 
-        // Risk Assessment section
-        if (results.riskAssessment) {
-            const riskSection = this.createResultsSection('Risk Assessment', results.riskAssessment);
-            content.appendChild(riskSection);
+            resultsContainer.appendChild(content);
+
+            // Action buttons
+            const actionsContainer = document.createElement('div');
+            actionsContainer.className = 'results-actions';
+            actionsContainer.style.cssText = 'display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;';
+
+            const exportBtn = document.createElement('button');
+            exportBtn.className = 'nav-btn nav-btn-secondary';
+            exportBtn.innerHTML = '📄 Export Results';
+            exportBtn.addEventListener('click', () => this.exportResults());
+
+            const printBtn = document.createElement('button');
+            printBtn.className = 'nav-btn nav-btn-secondary';
+            printBtn.innerHTML = '🖨️ Print Results';
+            printBtn.addEventListener('click', () => window.print());
+
+            const restartBtn = document.createElement('button');
+            restartBtn.className = 'nav-btn nav-btn-primary';
+            restartBtn.innerHTML = '🔄 Start New Assessment';
+            restartBtn.addEventListener('click', () => this.restartAssessment());
+
+            actionsContainer.appendChild(exportBtn);
+            actionsContainer.appendChild(printBtn);
+            actionsContainer.appendChild(restartBtn);
+            resultsContainer.appendChild(actionsContainer);
+
+            this.elements.assessmentContainer.appendChild(resultsContainer);
+
+            // Hide navigation
+            this.elements.prevBtn.style.display = 'none';
+            this.elements.nextBtn.style.display = 'none';
+
+            // Update progress to 100%
+            this.elements.progressFill.style.width = '100%';
+            this.elements.progressText.textContent = 'Assessment Complete';
+
+            // Submit results to server
+            this.submitResults();
+            
+            console.log('Results page loaded successfully');
+        } catch (error) {
+            console.error('Error in showResults:', error);
+            this.showError('Failed to load assessment results. Please try again.');
         }
-
-        // Recommendations section
-        const recommendationsSection = this.createResultsSection('Recommendations', results.recommendations);
-        content.appendChild(recommendationsSection);
-
-        // Self-Care Tips section
-        if (results.selfCareTips) {
-            const selfCareSection = this.createResultsSection('Self-Care Tips', results.selfCareTips);
-            content.appendChild(selfCareSection);
-        }
-
-        // When to Seek Medical Attention section
-        const medicalAttentionSection = this.createResultsSection('When to Seek Medical Attention', results.medicalAttention);
-        content.appendChild(medicalAttentionSection);
-
-        // Disclaimer section
-        const disclaimerSection = this.createResultsSection('Disclaimer', results.disclaimer);
-        content.appendChild(disclaimerSection);
-
-        resultsContainer.appendChild(content);
-
-        // Action buttons
-        const actionsContainer = document.createElement('div');
-        actionsContainer.className = 'results-actions';
-        actionsContainer.style.cssText = 'display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;';
-
-        const exportBtn = document.createElement('button');
-        exportBtn.className = 'nav-btn nav-btn-secondary';
-        exportBtn.innerHTML = '📄 Export Results';
-        exportBtn.addEventListener('click', () => this.exportResults());
-
-        const printBtn = document.createElement('button');
-        printBtn.className = 'nav-btn nav-btn-secondary';
-        printBtn.innerHTML = '🖨️ Print Results';
-        printBtn.addEventListener('click', () => window.print());
-
-        const restartBtn = document.createElement('button');
-        restartBtn.className = 'nav-btn nav-btn-primary';
-        restartBtn.innerHTML = '🔄 Start New Assessment';
-        restartBtn.addEventListener('click', () => this.restartAssessment());
-
-        actionsContainer.appendChild(exportBtn);
-        actionsContainer.appendChild(printBtn);
-        actionsContainer.appendChild(restartBtn);
-        resultsContainer.appendChild(actionsContainer);
-
-        this.elements.assessmentContainer.appendChild(resultsContainer);
-
-        // Hide navigation
-        this.elements.prevBtn.style.display = 'none';
-        this.elements.nextBtn.style.display = 'none';
-
-        // Update progress to 100%
-        this.elements.progressFill.style.width = '100%';
-        this.elements.progressText.textContent = 'Assessment Complete';
-
-        // Submit results to server
-        this.submitResults();
     }
 
     createResultsSection(title, content) {
@@ -731,6 +760,8 @@ class PhysioAssessmentApp {
     }
 
     generateResults() {
+        console.log('Assessment data:', this.assessmentData);
+        
         const results = {
             summary: [],
             riskAssessment: null,
@@ -744,6 +775,8 @@ class PhysioAssessmentApp {
         if (this.assessmentData.selectedBodyParts.length > 0) {
             const areas = this.assessmentData.selectedBodyParts.map(partId => this.getBodyPartName(partId)).join(', ');
             results.summary.push(`Primary areas of concern: ${areas}`);
+        } else {
+            results.summary.push('No specific areas selected');
         }
 
         // Comprehensive risk assessment
@@ -780,86 +813,291 @@ class PhysioAssessmentApp {
     }
 
     assessRiskLevel() {
+        console.log('Starting risk assessment...');
         const redFlags = this.checkRedFlags();
         const symptomAnswers = this.assessmentData.answers.symptom_onset || {};
         const functionalAnswers = this.assessmentData.answers.functional_assessment || {};
+        const medicalAnswers = this.assessmentData.answers.medical_history || {};
+        const screeningAnswers = this.assessmentData.answers.screening_questions || {};
+        
+        console.log('Red flags:', redFlags);
+        console.log('Symptom answers:', symptomAnswers);
+        console.log('Functional answers:', functionalAnswers);
         
         let riskScore = 0;
         const riskFactors = [];
+        
+        // Extract movement patterns early to avoid initialization issues
+        const movementPatterns = functionalAnswers.movement_patterns || [];
+        const activitiesAvoided = functionalAnswers.activities_avoided || [];
 
-        // Red flags (high weight)
+        // Red flags (highest weight - immediate high risk)
         if (redFlags.length > 0) {
-            riskScore += redFlags.length * 10;
+            riskScore += redFlags.length * 15;
             riskFactors.push(`Red flags: ${redFlags.join(', ')}`);
         }
 
-        // Pain level assessment
+        // Pain level assessment (more sensitive)
         const painLevel = parseInt(symptomAnswers.pain_level) || 0;
-        if (painLevel >= 8) {
+        if (painLevel >= 9) {
+            riskScore += 12;
+            riskFactors.push(`Very severe pain (level ${painLevel}/10)`);
+        } else if (painLevel >= 7) {
             riskScore += 8;
             riskFactors.push(`Severe pain (level ${painLevel}/10)`);
-        } else if (painLevel >= 6) {
-            riskScore += 4;
-            riskFactors.push(`Moderate to severe pain (level ${painLevel}/10)`);
+        } else if (painLevel >= 5) {
+            riskScore += 5;
+            riskFactors.push(`Moderate pain (level ${painLevel}/10)`);
+        } else if (painLevel >= 3) {
+            riskScore += 2;
+            riskFactors.push(`Mild pain (level ${painLevel}/10)`);
         }
 
-        // Duration assessment
+        // Duration assessment (more comprehensive)
         const duration = symptomAnswers.duration;
         if (duration === 'More than 6 months') {
-            riskScore += 3;
+            riskScore += 5;
             riskFactors.push('Chronic symptoms (>6 months)');
         } else if (duration === '3-6 months') {
-            riskScore += 2;
+            riskScore += 3;
             riskFactors.push('Prolonged symptoms (3-6 months)');
+        } else if (duration === '1-3 months') {
+            riskScore += 2;
+            riskFactors.push('Persistent symptoms (1-3 months)');
+        } else if (duration === '1-4 weeks') {
+            riskScore += 1;
+            riskFactors.push('Recent symptoms (1-4 weeks)');
         }
 
-        // Functional impact
+        // Functional impact (more detailed)
         const workImpact = functionalAnswers.work_impact;
         if (workImpact === 'Unable to work/perform activities') {
-            riskScore += 6;
+            riskScore += 8;
             riskFactors.push('Severe functional limitation');
         } else if (workImpact === 'Severely') {
-            riskScore += 4;
+            riskScore += 6;
             riskFactors.push('Significant functional impact');
+        } else if (workImpact === 'Moderately') {
+            riskScore += 4;
+            riskFactors.push('Moderate functional impact');
+        } else if (workImpact === 'Slightly') {
+            riskScore += 2;
+            riskFactors.push('Mild functional impact');
         }
 
-        // Sleep impact
+        // Sleep impact (more sensitive)
         const sleepImpact = functionalAnswers.sleep_impact;
         if (sleepImpact === 'Unable to sleep due to symptoms') {
-            riskScore += 5;
+            riskScore += 7;
             riskFactors.push('Severe sleep disturbance');
         } else if (sleepImpact === 'Frequent sleep disturbance') {
-            riskScore += 3;
+            riskScore += 5;
             riskFactors.push('Frequent sleep problems');
+        } else if (sleepImpact === 'Occasional sleep disturbance') {
+            riskScore += 3;
+            riskFactors.push('Occasional sleep problems');
         }
 
-        // Pain patterns
+        // Pain patterns (more comprehensive)
         const painPattern = symptomAnswers.pain_pattern || [];
         if (painPattern.includes('Constant')) {
-            riskScore += 4;
+            riskScore += 6;
             riskFactors.push('Constant pain pattern');
         }
         if (painPattern.includes('At night')) {
-            riskScore += 3;
+            riskScore += 5;
             riskFactors.push('Night pain');
         }
-
-        // Multiple body areas
-        const bodyAreas = this.assessmentData.selectedBodyParts.length;
-        if (bodyAreas >= 4) {
+        if (painPattern.includes('When moving')) {
             riskScore += 3;
-            riskFactors.push(`Multiple affected areas (${bodyAreas} areas)`);
-        } else if (bodyAreas >= 2) {
-            riskScore += 1;
-            riskFactors.push(`Multiple affected areas (${bodyAreas} areas)`);
+            riskFactors.push('Movement-related pain');
+        }
+        if (painPattern.includes('In the morning')) {
+            riskScore += 2;
+            riskFactors.push('Morning stiffness/pain');
+        }
+        if (painPattern.includes('After activity')) {
+            riskScore += 2;
+            riskFactors.push('Post-activity pain');
         }
 
-        // Determine risk level
+        // Pain type assessment
+        const painType = symptomAnswers.pain_type || [];
+        if (painType.includes('Sharp')) {
+            riskScore += 4;
+            riskFactors.push('Sharp pain');
+        }
+        if (painType.includes('Burning')) {
+            riskScore += 3;
+            riskFactors.push('Burning pain');
+        }
+        if (painType.includes('Tingling')) {
+            riskScore += 3;
+            riskFactors.push('Tingling sensation');
+        }
+        if (painType.includes('Numbness')) {
+            riskScore += 4;
+            riskFactors.push('Numbness');
+        }
+        if (painType.includes('Weakness')) {
+            riskScore += 5;
+            riskFactors.push('Muscle weakness');
+        }
+
+        // Medical history factors
+        if (medicalAnswers.previous_injuries === 'yes') {
+            riskScore += 3;
+            riskFactors.push('Previous injuries to affected area');
+        }
+        
+        const surgeryHistory = medicalAnswers.surgery_history || [];
+        if (surgeryHistory.length > 0 && !surgeryHistory.includes('None')) {
+            riskScore += 4;
+            riskFactors.push('Previous surgeries');
+        }
+
+        const chronicConditions = medicalAnswers.chronic_conditions || [];
+        if (chronicConditions.length > 0 && !chronicConditions.includes('None')) {
+            riskScore += 3;
+            riskFactors.push('Chronic medical conditions');
+        }
+
+        // Medication use
+        if (medicalAnswers.medications === 'yes') {
+            riskScore += 2;
+            riskFactors.push('Currently taking medications');
+        }
+
+        // Accident/injury cause
+        if (screeningAnswers.accident_cause === 'yes') {
+            riskScore += 4;
+            riskFactors.push('Symptoms caused by accident/fall');
+        }
+
+        // Body area severity assessment (individual area focus)
+        const selectedAreas = this.assessmentData.selectedBodyParts;
+        console.log('Selected body areas:', selectedAreas);
+        
+        // Define risk categories for body areas
+        const highRiskAreas = ['lower_back', 'upper_back', 'neck', 'head'];
+        const moderateRiskAreas = ['shoulder_left', 'shoulder_right', 'knee_left', 'knee_right', 'hip_left', 'hip_right', 'chest'];
+        const spineAreas = ['lower_back', 'upper_back', 'neck'];
+        const jointAreas = ['shoulder_left', 'shoulder_right', 'knee_left', 'knee_right', 'hip_left', 'hip_right', 'elbow_left', 'elbow_right', 'ankle_left', 'ankle_right'];
+        
+        // Check for high-risk body areas
+        const hasHighRiskArea = selectedAreas.some(area => highRiskAreas.includes(area));
+        const hasModerateRiskArea = selectedAreas.some(area => moderateRiskAreas.includes(area));
+        const hasSpineArea = selectedAreas.some(area => spineAreas.includes(area));
+        const hasJointArea = selectedAreas.some(area => jointAreas.includes(area));
+        
+        // Add base risk for body areas
+        if (hasHighRiskArea) {
+            riskScore += 2;
+            riskFactors.push('High-risk body area affected');
+        }
+        
+        if (hasModerateRiskArea) {
+            riskScore += 1;
+            riskFactors.push('Moderate-risk body area affected');
+        }
+
+        // Spine-specific risk factors (back and neck)
+        if (hasSpineArea) {
+            // Additional risk for spine-related symptoms
+            if (painType.includes('Tingling') || painType.includes('Numbness')) {
+                riskScore += 3;
+                riskFactors.push('Spine-related neurological symptoms');
+            }
+            if (painPattern.includes('Constant')) {
+                riskScore += 2;
+                riskFactors.push('Constant spine pain');
+            }
+            if (movementPatterns.includes('Walking')) {
+                riskScore += 2;
+                riskFactors.push('Spine pain affecting walking');
+            }
+        }
+
+        // Joint-specific risk factors (shoulders, knees, hips, elbows, ankles)
+        if (hasJointArea) {
+            if (painType.includes('Weakness')) {
+                riskScore += 3;
+                riskFactors.push('Joint-related muscle weakness');
+            }
+            if (functionalAnswers.assistance_needed === 'yes') {
+                riskScore += 2;
+                riskFactors.push('Joint requiring assistance');
+            }
+        }
+
+        // Age factor (older adults at higher risk)
+        const demographicsAnswers = this.assessmentData.answers.demographics || {};
+        const age = demographicsAnswers.age;
+        if (age === '70+ years') {
+            riskScore += 3;
+            riskFactors.push('Advanced age (70+)');
+        } else if (age === '60 - 69 years') {
+            riskScore += 2;
+            riskFactors.push('Older age (60-69)');
+        }
+
+        // Activity level (high activity can increase risk)
+        const activityLevel = demographicsAnswers.activity_level;
+        if (activityLevel === 'Extremely active (very hard exercise, physical job)') {
+            riskScore += 2;
+            riskFactors.push('Extremely active lifestyle');
+        }
+
+        // Additional functional assessment factors
+        if (movementPatterns.includes('Lifting objects')) {
+            riskScore += 2;
+            riskFactors.push('Pain with lifting');
+        }
+        if (movementPatterns.includes('Reaching overhead')) {
+            riskScore += 2;
+            riskFactors.push('Pain with overhead activities');
+        }
+        if (movementPatterns.includes('Bending forward')) {
+            riskScore += 3;
+            riskFactors.push('Pain with forward bending');
+        }
+        if (movementPatterns.includes('Bending backward')) {
+            riskScore += 3;
+            riskFactors.push('Pain with backward bending');
+        }
+        if (movementPatterns.includes('Twisting/rotating')) {
+            riskScore += 3;
+            riskFactors.push('Pain with twisting/rotation');
+        }
+        if (movementPatterns.includes('Walking')) {
+            riskScore += 4;
+            riskFactors.push('Pain with walking');
+        }
+        if (movementPatterns.includes('Climbing stairs')) {
+            riskScore += 3;
+            riskFactors.push('Pain with stair climbing');
+        }
+
+        if (activitiesAvoided.includes('Exercise/sports')) {
+            riskScore += 2;
+            riskFactors.push('Avoiding exercise due to pain');
+        }
+        if (activitiesAvoided.includes('Work activities')) {
+            riskScore += 3;
+            riskFactors.push('Work activities affected');
+        }
+
+        if (functionalAnswers.assistance_needed === 'yes') {
+            riskScore += 4;
+            riskFactors.push('Requires assistance with daily activities');
+        }
+
+        // Determine risk level (lowered thresholds)
         let level, assessment;
-        if (riskScore >= 15 || redFlags.length > 0) {
+        if (riskScore >= 12 || redFlags.length > 0) {
             level = 'HIGH';
             assessment = `HIGH RISK - Multiple concerning factors: ${riskFactors.join(', ')}`;
-        } else if (riskScore >= 8) {
+        } else if (riskScore >= 6) {
             level = 'MEDIUM';
             assessment = `MEDIUM RISK - Some concerning factors: ${riskFactors.join(', ')}`;
         } else {
@@ -867,6 +1105,7 @@ class PhysioAssessmentApp {
             assessment = 'LOW RISK - No immediate concerning factors detected';
         }
 
+        console.log('Risk assessment result:', { level, assessment, riskScore, riskFactors });
         return { level, assessment, riskScore, riskFactors };
     }
 
