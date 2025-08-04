@@ -232,17 +232,6 @@ class PhysioAssessmentApp {
         const container = document.createElement('div');
         container.className = 'body-diagram-container';
 
-        // Gender selection
-        const genderSelection = document.createElement('div');
-        genderSelection.className = 'gender-selection';
-
-        const femaleOption = this.createGenderOption('female', 'FEMALE', '👤');
-        const maleOption = this.createGenderOption('male', 'MALE', '👤');
-
-        genderSelection.appendChild(femaleOption);
-        genderSelection.appendChild(maleOption);
-        container.appendChild(genderSelection);
-
         // Body diagram
         const bodyDiagram = document.createElement('div');
         bodyDiagram.className = 'body-diagram';
@@ -277,41 +266,7 @@ class PhysioAssessmentApp {
         return container;
     }
 
-    createGenderOption(value, label, icon) {
-        const option = document.createElement('div');
-        option.className = 'gender-option';
-        option.dataset.value = value;
 
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'gender-icon';
-        iconDiv.textContent = icon;
-
-        const labelDiv = document.createElement('div');
-        labelDiv.className = 'gender-label';
-        labelDiv.textContent = label;
-
-        option.appendChild(iconDiv);
-        option.appendChild(labelDiv);
-
-        // Check if already selected
-        if (this.assessmentData.answers.gender === value) {
-            option.classList.add('selected');
-        }
-
-        option.addEventListener('click', () => {
-            // Remove selection from other options
-            document.querySelectorAll('.gender-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            // Select this option
-            option.classList.add('selected');
-            this.assessmentData.answers.gender = value;
-            this.updateNavigation();
-        });
-
-        return option;
-    }
 
     createScreeningContent(step) {
         const container = document.createElement('div');
@@ -617,7 +572,7 @@ class PhysioAssessmentApp {
 
         switch (step.type) {
             case 'body_diagram':
-                return this.assessmentData.selectedBodyParts.length > 0 && this.assessmentData.answers.gender;
+                return this.assessmentData.selectedBodyParts.length > 0;
             
             case 'screening':
                 if (!step.questions) return true;
