@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Assessment records
+model Assessment {
+  id                String   @id @default(cuid())
+  status            String   @default("in_progress") // in_progress, completed, abandoned
+  selectedBodyParts Json?    // Array of selected body part IDs
+  answers           Json?    // All assessment answers
+  riskLevel         String?  // HIGH, MEDIUM, LOW
+  riskScore         Int?     // Numerical risk score
+  riskFactors       Json?    // Array of risk factors
+  results           Json?    // Generated results object
+  summary           String?  // Assessment summary
+  recommendations   Json?    // Array of recommendations
+  selfCareTips      Json?    // Array of self-care tips
+  medicalAttention  Json?    // Array of medical attention items
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  completedAt       DateTime?
+
+  // Analytics relationship
+  analytics Analytics[]
+
+  @@map("assessments")
+}
+
+// Analytics events for tracking user behavior
+model Analytics {
+  id           String   @id @default(cuid())
+  assessmentId String
+  eventType    String   // step_completed, body_part_selected, assessment_started, etc.
+  eventData    Json?    // Additional event data
+  stepNumber   Int?     // Which step was completed
+  stepId       String?  // ID of the step
+  bodyPart     String?  // Selected body part
+  painLevel    Int?     // Pain level if applicable
+  duration     Int?     // Time spent on step in seconds
+  createdAt    DateTime @default(now())
+
+  // Relationship to assessment
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("analytics")
+}
+
+// Configuration settings
+model Configuration {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("configurations")
+}
+
+// Assessment templates/presets
+model AssessmentTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  config      Json     // Assessment configuration
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("assessment_templates")
+}
+
+// Risk assessment rules and scoring
+model RiskRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String   // pain_level, duration, functional_impact, etc.
+  condition   Json     // Rule condition
+  score       Int      // Points to add
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("risk_rules")
+}

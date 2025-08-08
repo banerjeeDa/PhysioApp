@@ -9,6 +9,10 @@
     "start:local": "PORT=3001 HOST=localhost NODE_ENV=development node dist/index.js",
     "start:network": "PORT=3001 HOST=0.0.0.0 NODE_ENV=development node dist/index.js",
     "start:prod": "PORT=3001 HOST=0.0.0.0 NODE_ENV=production node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,13 +20,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.13.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "prisma": "^6.13.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.2.0",
     "typescript": "^5.8.3"
   }
 }

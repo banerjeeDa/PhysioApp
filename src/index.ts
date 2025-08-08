@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
+import assessmentRoutes from './routes/assessmentRoutes';
 
 const app = express();
 const port = parseInt(process.env.PORT || '3001', 10);
@@ -11,13 +12,16 @@ const host = process.env.HOST || '0.0.0.0';
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com', 'https://www.yourdomain.com'] // Replace with your actual domain
-    : true, // Allow all origins in development
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow React dev server
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(express.json());
 app.use(express.static('public'));
+
+// Database-enhanced assessment routes
+app.use('/api/assessment', assessmentRoutes);
 
 // Load configuration files
 const configPath = path.join(__dirname, '../config/assessment-config.json');
